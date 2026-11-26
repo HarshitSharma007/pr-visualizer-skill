@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<link rel="icon" href="data:," />
+<title>GitDiagram PR 205 Sample Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Caveat:wght@500;700&family=Patrick+Hand&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    color-scheme: light;
+    --paper:#fffef9; --paper2:#ffffff; --card:#ffffff;
+    --ink:#2f3a4a; --muted:#64748b; --faint:#c2cad4;
+    --border:#3d4a5f;
+    --yellow:#fff8d6; --yellow-ink:#5a4d12;
+    --pink:#f2eeff; --pink-ink:#4a3d6b;
+    --blue:#eaf2fe; --blue2:#eaf2fe; --green:#e8f5eb; --lav:#ede9fe;
+    --amber:#fcd34d; --red:#e0655f; --ok:#3a9a5f;
+    --shadow:2px 3px 0 rgba(47,58,74,.14);
+    --shadow-sm:1px 2px 0 rgba(47,58,74,.12);
+    --wob:255px 16px 225px 16px/16px 225px 16px 255px;
+    --wob2:16px 225px 16px 255px/225px 16px 255px 16px;
+    --wob3:55px 10px 48px 10px/10px 48px 10px 55px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--ink);
+    font-family:"Patrick Hand", system-ui, sans-serif; font-size:17px; line-height:1.5;
+    background-color:var(--paper);
+    background-image:radial-gradient(rgba(124,138,158,.07) 1px, transparent 1.2px);
+    background-size:22px 22px;
+  }
+  button{font-family:inherit; cursor:pointer; min-height:44px}
+  a{color:inherit}
+  :focus-visible{outline:3px dashed #f59e0b; outline-offset:2px}
+  .mono{font-family:"IBM Plex Mono", monospace}
+  .hand-note{font-family:"Caveat", cursive}
+
+  /* ---------- toolbar / deck chrome ---------- */
+  .toolbar{
+    position:sticky; top:0; z-index:30;
+    background:var(--paper2); border-bottom:1.5px solid var(--faint);
+    padding:8px 14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  }
+  .toolbar .pr-chip{
+    font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600;
+    border:1.6px solid var(--border); border-radius:var(--wob3); padding:6px 12px; background:var(--card);
+    box-shadow:var(--shadow-sm); text-decoration:none; display:inline-flex; align-items:center; min-height:36px;
+  }
+  .toolbar .spacer{flex:1}
+  .nav-btn{
+    border:1.8px solid var(--border); background:var(--card); color:var(--ink);
+    border-radius:var(--wob3); box-shadow:var(--shadow-sm);
+    padding:6px 16px; font-size:16px; font-family:"Kalam",cursive; font-weight:700;
+  }
+  .nav-btn:active{transform:translate(2px,3px); box-shadow:none}
+  .nav-btn[disabled]{opacity:.35; cursor:default}
+  .counter{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--muted); padding:0 4px}
+  .progress{height:6px; background:#f1f3f6; border-bottom:1px solid var(--faint)}
+  .progress > div{height:100%; background:#fde68a; transition:width .3s ease}
+
+  .rail{display:flex; flex-wrap:wrap; gap:8px; max-width:1120px; margin:16px auto 0; padding:0 16px}
+  .rail button{
+    border:1.6px solid var(--border); background:var(--card); color:var(--ink);
+    border-radius:var(--wob3); box-shadow:var(--shadow-sm);
+    font-size:14.5px; padding:6px 13px; display:inline-flex; gap:8px; align-items:center;
+  }
+  .rail button .n{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted)}
+  .rail button[aria-current="true"]{background:var(--yellow); color:var(--yellow-ink)}
+  .rail button[aria-current="true"] .n{color:inherit}
+
+  /* ---------- slides ---------- */
+  .deck{max-width:1120px; margin:0 auto; padding:18px 16px 70px}
+  .slide{
+    display:none; background:var(--paper2);
+    border:1.8px solid var(--border); border-radius:var(--wob);
+    box-shadow:3px 4px 0 rgba(47,58,74,.08);
+    padding:30px 34px 26px;
+  }
+  .slide.active{display:block}
+  @media (prefers-reduced-motion: no-preference){
+    .slide.active{animation:slideIn .28s ease}
+    @keyframes slideIn{from{opacity:0; transform:rotate(-.3deg) translateY(6px)} to{opacity:1; transform:none}}
+  }
+  .pr-line{font-family:"IBM Plex Mono",monospace; font-size:13px; letter-spacing:.04em; color:var(--muted); text-transform:uppercase}
+  h1,h2.filename{font-family:"Kalam",cursive; font-weight:700; line-height:1.12; margin:8px 0 4px}
+  h1{font-size:clamp(30px,5.4vw,46px)}
+  h2.filename{font-size:clamp(27px,4.6vw,40px)}
+  h2.slide-title{font-family:"Kalam",cursive; font-weight:700; font-size:clamp(26px,4.4vw,38px); line-height:1.15; margin:8px 0 6px}
+  .path{font-family:"IBM Plex Mono",monospace; font-size:13.5px; color:var(--muted); word-break:break-all}
+  .group-label{font-family:"Kalam",cursive; font-size:19px; margin:20px 0 10px; color:var(--ink)}
+  .group-label .gnum{
+    display:inline-block; border:1.6px solid var(--border); background:var(--lav);
+    border-radius:50% 46% 52% 48%/48% 52% 46% 54%; width:30px; height:30px; line-height:27px; text-align:center;
+    font-size:15px; margin-right:8px; box-shadow:var(--shadow-sm);
+  }
+  .lede{font-size:19px; max-width:62ch}
+  .small{font-size:14.5px; color:var(--muted)}
+  .filejob{font-size:16.5px; max-width:66ch; margin-top:10px}
+  .filejob b{font-family:"Kalam",cursive}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 4px}
+  .chip{
+    border:1.6px solid var(--border); border-radius:var(--wob3); background:var(--card);
+    padding:5px 12px; font-size:14.5px; box-shadow:var(--shadow-sm); display:inline-flex; gap:7px; align-items:center;
+  }
+  .chip .mono{font-size:12.5px}
+  .chip.core{background:var(--yellow); color:var(--yellow-ink)}
+  .chip .add{color:var(--ok); font-weight:700}
+  .chip .del{color:var(--red); font-weight:700}
+
+  /* WHY + distinction boxes */
+  .why{
+    background:var(--yellow); color:var(--yellow-ink);
+    border:1.8px solid var(--border); border-radius:var(--wob2); box-shadow:var(--shadow);
+    padding:16px 20px 14px; margin:14px 0 22px;
+  }
+  .why h3, .distinction h3{
+    font-family:"Kalam",cursive; font-size:16px; letter-spacing:.06em; margin:0 0 6px; text-transform:uppercase;
+  }
+  .why p, .distinction p{margin:0; font-size:17.5px; max-width:70ch}
+  .distinction{
+    background:var(--pink); color:var(--pink-ink);
+    border:1.8px solid var(--border); border-radius:var(--wob); box-shadow:var(--shadow);
+    padding:16px 20px 14px; margin:22px 0 6px;
+  }
+
+  /* INPUT -> THIS FILE -> RESULT flow */
+  .flow{display:flex; align-items:stretch; gap:6px}
+  .flow-box{
+    flex:1 1 0; border:1.8px solid var(--border); box-shadow:var(--shadow);
+    padding:16px 18px 14px; min-height:190px;
+  }
+  .flow-box.input{background:var(--blue); border-radius:var(--wob2)}
+  .flow-box.this{background:var(--green); border-radius:var(--wob3)}
+  .flow-box.result{background:var(--blue2); border-radius:var(--wob)}
+  .flow-box .tag{font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.75}
+  .flow-box h4{font-family:"Kalam",cursive; font-size:21px; margin:6px 0 10px; line-height:1.2}
+  .flow-box p{margin:0; font-size:16px}
+  .flow-box code{font-family:"IBM Plex Mono",monospace; font-size:13px; background:rgba(255,255,255,.45); padding:0 4px; border-radius:4px}
+  .flow-arrow{align-self:center; flex:0 0 34px; display:flex; justify-content:center}
+  .flow-arrow svg{width:32px; height:20px; stroke:var(--ink)}
+  @media (max-width:760px){
+    .flow{flex-direction:column}
+    .flow-box{min-height:0}
+    .flow-arrow{transform:rotate(90deg); margin:2px auto}
+  }
+
+  .src-footer{
+    margin-top:18px; padding-top:12px; border-top:2px dashed var(--faint);
+    font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--muted);
+    display:flex; flex-wrap:wrap; gap:6px 18px;
+  }
+  .src-footer a{color:inherit}
+
+  /* before / after toggle */
+  .ba-toggle{display:inline-flex; border:1.8px solid var(--border); border-radius:var(--wob3); overflow:hidden; box-shadow:var(--shadow-sm); background:var(--card)}
+  .ba-toggle button{border:0; background:transparent; color:var(--ink); padding:8px 20px; font-family:"Kalam",cursive; font-weight:700; font-size:16px}
+  .ba-toggle button[aria-pressed="true"]{background:#475569; color:#ffffff}
+  .ba-row{display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin:16px 0 6px}
+  .ba-caption{font-family:"Caveat",cursive; font-size:21px; font-weight:700}
+
+  /* stat band on cover */
+  .stat-band{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin:20px 0}
+  .stat{
+    border:1.8px solid var(--border); background:var(--card); box-shadow:var(--shadow);
+    border-radius:var(--wob2); padding:14px 16px;
+  }
+  .stat .k{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted)}
+  .stat .v{font-family:"Kalam",cursive; font-size:26px; margin-top:4px}
+  .stat .v .arrow{color:var(--ok)}
+  .stat p{margin:4px 0 0; font-size:14.5px; color:var(--muted)}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:22px; align-items:start}
+  @media (max-width:820px){ .two-col{grid-template-columns:1fr} }
+
+  /* ---------- phone mock (the app itself) ---------- */
+  .phone{
+    width:min(330px,100%); margin:0 auto; background:#e8ecf1;
+    border:2px solid var(--border); border-radius:38px; padding:10px;
+    box-shadow:4px 5px 0 rgba(47,58,74,.10);
+  }
+  .phone .screen{background:#fffef9; border-radius:28px; padding:14px 12px 16px; color:#2f3a4a; overflow:hidden}
+  .phone .notch{width:90px; height:5px; border-radius:3px; background:#cfc9ba; margin:0 auto 12px}
+  .mock-url{font-family:"IBM Plex Mono",monospace; font-size:11px; color:#6d675a; text-align:center; margin-bottom:10px}
+  .mock-card{background:#fff; border:1.8px solid #3d4a5f; border-radius:10px; box-shadow:3px 3px 0 rgba(47,58,74,.10); padding:14px 12px}
+  .mock-repo{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600; word-break:break-all}
+  .mock-diagram{border:1.6px solid #3d4a5f; border-radius:8px; margin:12px 0; padding:10px; background:#fbf9f3}
+  .mock-actions{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .mock-btn{
+    border:1.8px solid #3d4a5f; border-radius:7px; background:#e9dfff; color:#2f3a4a;
+    font-family:"Patrick Hand",sans-serif; font-weight:700; font-size:14px;
+    min-height:44px; padding:8px 6px; display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
+  }
+  .mock-btn:active{transform:scale(.97)}
+  .mock-zoom{display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:2px solid rgba(20,18,14,.18); margin-top:12px; padding-top:10px; min-height:44px}
+  .mock-zoom .zl{font-size:14px; font-weight:700}
+  .mock-switch{width:46px; height:26px; border:1.6px solid #3d4a5f; border-radius:20px; background:#e7e2d4; position:relative; flex:0 0 auto; min-height:26px; padding:0}
+  .mock-switch::after{content:""; position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#3d4a5f; transition:left .18s ease}
+  .mock-switch[aria-checked="true"]{background:#bbf7d0}
+  .mock-switch[aria-checked="true"]::after{left:22px}
+  .mock-panel{border-top:2.5px dashed rgba(20,18,14,.35); margin-top:12px; padding-top:12px}
+  .mock-panel[hidden]{display:none}
+  .mock-panel .stack{display:flex; flex-direction:column; gap:10px}
+  .mock-panel .mock-btn{background:#fff}
+  .mock-note{font-size:12px; color:#55503f; margin-top:8px}
+  /* BEFORE state of the mock */
+  .phone[data-state="before"] .mock-actions{display:flex; flex-direction:column; align-items:center}
+  .phone[data-state="before"] .mock-btn{width:auto; padding:16px; font-size:16px; min-height:0}
+  .phone[data-state="before"] .mock-zoom{flex-direction:column; align-items:flex-start; border-top:0; padding-top:4px; gap:6px}
+  .phone[data-state="before"] .mock-panel .mock-btn{width:100%}
+  .lbl-short{display:none}
+  .phone[data-state="after"] .lbl-long{display:none}
+  .phone[data-state="after"] .lbl-short{display:inline}
+  .measure{
+    margin:14px auto 0; max-width:330px; border:1.6px solid var(--border); border-radius:var(--wob3);
+    background:var(--card); box-shadow:var(--shadow-sm); padding:10px 14px; font-size:15px; text-align:center;
+  }
+  .measure b{font-family:"Kalam",cursive; font-size:18px}
+  .callouts{list-style:none; margin:6px 0 0; padding:0; display:grid; gap:12px}
+  .callouts li{display:flex; gap:12px; align-items:flex-start; font-size:16.5px}
+  .callouts .num{
+    flex:0 0 30px; width:30px; height:30px; border:1.6px solid var(--border); background:#fef3c7;
+    border-radius:50% 46% 52% 48%/48% 52% 46% 54%; font-family:"Kalam",cursive; font-weight:700;
+    display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:var(--shadow-sm);
+  }
+
+  /* ---------- HLD ---------- */
+  .hld{display:flex; flex-direction:column; gap:0; margin-top:18px}
+  .hld-row{display:flex; gap:14px; flex-wrap:wrap; justify-content:center}
+  .hld-node{
+    border:1.8px solid var(--border); background:var(--card); border-radius:var(--wob2);
+    box-shadow:var(--shadow); padding:13px 16px; min-width:170px; max-width:300px; flex:1 1 200px;
+  }
+  .hld-node h4{font-family:"Kalam",cursive; margin:0 0 4px; font-size:19px}
+  .hld-node p{margin:0; font-size:14.5px; color:var(--muted)}
+  .hld-node .mono{font-size:11.5px}
+  .hld-node.changed{background:var(--yellow); color:var(--yellow-ink)}
+  .hld-node.changed p{color:inherit; opacity:.85}
+  .hld-node .badge{
+    display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600;
+    border:1.8px solid currentColor; border-radius:20px; padding:1px 8px; margin-bottom:6px; letter-spacing:.05em;
+  }
+  .hld-link{display:flex; flex-direction:column; align-items:center; padding:2px 0; color:var(--muted)}
+  .hld-link svg{width:22px; height:30px; stroke:var(--ink)}
+  .hld-link span{font-family:"Caveat",cursive; font-size:18px; font-weight:700; color:var(--ink)}
+  .legend{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; font-size:14px}
+  .legend span{border:1.6px solid var(--border); border-radius:var(--wob3); padding:4px 11px; background:var(--card)}
+  .legend .sw{display:inline-block; width:12px; height:12px; border:1.6px solid var(--border); border-radius:3px; vertical-align:-1px; margin-right:6px}
+
+  /* ---------- gates ---------- */
+  .gate-list{list-style:none; margin:16px 0 0; padding:0; display:grid; gap:12px}
+  .gate-list li{
+    display:flex; gap:14px; align-items:flex-start; border:1.8px solid var(--border);
+    background:var(--card); border-radius:var(--wob2); box-shadow:var(--shadow); padding:14px 16px;
+  }
+  .gate-ic{
+    flex:0 0 34px; width:34px; height:34px; border:1.6px solid var(--border); border-radius:50% 46% 52% 48%/48% 52% 46% 54%;
+    display:flex; align-items:center; justify-content:center; font-family:"Kalam",cursive; font-weight:700; font-size:17px;
+  }
+  .gate-ic.pass{background:var(--green)} .gate-ic.na{background:var(--blue)} .gate-ic.check{background:var(--yellow)}
+  .gate-list h4{font-family:"Kalam",cursive; margin:1px 0 3px; font-size:18.5px}
+  .gate-list p{margin:0; font-size:15.5px}
+  .gate-list .verdict{font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+  .check-list{list-style:none; margin:10px 0 0; padding:0; display:grid; gap:7px; font-size:15.5px}
+  .check-list li{padding-left:26px; position:relative}
+  .check-list li::before{content:"✓"; position:absolute; left:2px; font-family:"Kalam",cursive; font-weight:700; color:var(--ok)}
+  .verdict-box{
+    margin-top:20px; background:var(--green); border:1.8px solid var(--border); border-radius:var(--wob);
+    box-shadow:var(--shadow); padding:16px 20px;
+  }
+  .verdict-box h3{font-family:"Kalam",cursive; margin:0 0 5px; font-size:19px}
+  .verdict-box p{margin:0; font-size:16.5px; max-width:70ch}
+
+  @media (max-width:640px){
+    .slide{padding:22px 18px 20px}
+    body{font-size:16px}
+  }
+  @media print{
+    .toolbar,.rail,.progress{display:none !important}
+    .deck{padding:0}
+    .slide{display:block !important; page-break-after:always; box-shadow:none; margin-bottom:18px}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar" role="navigation" aria-label="Deck navigation">
+  <a class="pr-chip" href="https://github.com/ahmedkhaleel2004/gitdiagram/pull/205" target="_blank" rel="noopener">github.com/ahmedkhaleel2004/gitdiagram · PR #205 ↗</a>
+  <span class="spacer"></span>
+  <button class="nav-btn" id="prevBtn" type="button">← Prev</button>
+  <span class="counter" id="counter">1 / 7</span>
+  <button class="nav-btn" id="nextBtn" type="button">Next →</button>
+</div>
+<div class="progress" aria-hidden="true"><div id="progressBar" style="width:14%"></div></div>
+
+<nav class="rail" aria-label="Slides">
+  <button type="button" data-go="0" aria-current="true"><span class="n">01</span> Cover — the PR in one line</button>
+  <button type="button" data-go="1"><span class="n">02</span> App demo — before / after</button>
+  <button type="button" data-go="2"><span class="n">03</span> HLD — how the card fits together</button>
+  <button type="button" data-go="3"><span class="n">04</span> main-card.tsx</button>
+  <button type="button" data-go="4"><span class="n">05</span> copy-button.tsx</button>
+  <button type="button" data-go="5"><span class="n">06</span> export-dropdown.tsx</button>
+  <button type="button" data-go="6"><span class="n">07</span> Gates &amp; tests</button>
+</nav>
+
+<main class="deck" id="deck">
+
+<!-- ============ SLIDE 1 · COVER / APP-LEVEL ============ -->
+<section class="slide active" aria-label="Cover — the PR in one line">
+  <p class="pr-line">PR 205 · Cover · ahmedkhaleel2004/gitdiagram</p>
+  <h1>Tighten the mobile repo card layout</h1>
+  <p class="lede">On a phone, the repo card's buttons stacked up tall and uneven — each action on its own row, at its own width. This PR packs them into one neat row. <strong>Same card, same buttons, 98&nbsp;px shorter.</strong></p>
+  <div class="chips">
+    <span class="chip">by <b>ahmedkhaleel2004</b></span>
+    <span class="chip">Merged</span>
+    <span class="chip mono">main ← codex/fix-repo-card-mobile-layout</span>
+    <span class="chip">3 files</span>
+    <span class="chip"><span class="add">+38</span> <span class="del">−36</span> · 74 lines</span>
+    <span class="chip">1 commit</span>
+    <span class="chip core">1 core · 2 supporting · 0 mechanical</span>
+  </div>
+
+  <div class="stat-band">
+    <div class="stat">
+      <div class="k">Closed card · at 390px wide</div>
+      <div class="v">376px <span class="arrow">→</span> 278px</div>
+      <p>26% shorter, per the PR description's measurements.</p>
+    </div>
+    <div class="stat">
+      <div class="k">Export panel open · at 390px</div>
+      <div class="v">516px <span class="arrow">→</span> 416px</div>
+      <p>100px saved with the panel expanded.</p>
+    </div>
+    <div class="stat">
+      <div class="k">Smallest screen checked</div>
+      <div class="v">320px, no overflow</div>
+      <p>Controls stay at least 44px tall to tap, per the PR description.</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <p class="group-label"><span class="gnum">→</span>What actually changes for the user</p>
+      <ul class="check-list">
+        <li><b>Regenerate</b> and <b>Export</b> sit side by side in one equal two-column row, instead of stacking.</li>
+        <li>The <b>Enable Zoom</b> label and its switch share one aligned row, instead of two separate rows.</li>
+        <li>Button labels shorten on mobile only — “Regenerate” and “Export”. Full labels return on larger screens.</li>
+        <li>Desktop layout, labels and spacing are deliberately untouched — every change steps back up at the <span class="mono">sm:</span> breakpoint.</li>
+      </ul>
+      <p class="small" style="margin-top:14px">How to read this deck: one app demo, one diagram of how the card fits together, then one slide per changed file in the order a reviewer should read them — core first. Use the slide buttons above, Prev / Next, or the ← → arrow keys.</p>
+    </div>
+    <div>
+      <div class="ba-row" style="margin-top:0">
+        <div class="ba-toggle" role="group" aria-label="Cover preview before or after">
+          <button type="button" data-ba-set="before" aria-pressed="false">Before</button>
+          <button type="button" data-ba-set="after" aria-pressed="true">After</button>
+        </div>
+        <span class="ba-caption">Try it — flip the card</span>
+      </div>
+      <div class="phone" data-phone data-state="after" aria-label="Mock of the GitDiagram repo card">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="mock-url">gitdiagram.com · repo page</div>
+          <div class="mock-card">
+            <div class="mock-repo">ahmedkhaleel2004 / gitdiagram</div>
+            <div class="mock-diagram" aria-hidden="true">
+              <svg viewBox="0 0 260 74" width="100%" height="74" role="img" aria-label="Tiny diagram sketch">
+                <g fill="#fff" stroke="#475569" stroke-width="2">
+                  <rect x="6" y="24" width="62" height="26" rx="5"/><rect x="99" y="6" width="62" height="26" rx="5"/>
+                  <rect x="99" y="44" width="62" height="26" rx="5"/><rect x="192" y="24" width="62" height="26" rx="5"/>
+                </g>
+                <g stroke="#475569" stroke-width="2" fill="none">
+                  <path d="M68 34 C 80 30, 86 22, 97 19"/><path d="M68 40 C 80 44, 86 52, 97 56"/><path d="M161 30 C 174 32, 180 34, 190 36"/>
+                </g>
+                <g font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#334155" text-anchor="middle">
+                  <text x="37" y="41">app/</text><text x="130" y="23">api/</text><text x="130" y="61">lib/</text><text x="223" y="41">diagram</text>
+                </g>
+              </svg>
+            </div>
+            <div class="mock-actions">
+              <button class="mock-btn" type="button" tabindex="-1"><span class="lbl-short">Regenerate</span><span class="lbl-long">Regenerate Diagram</span></button>
+              <button class="mock-btn" type="button" data-export-toggle aria-expanded="false"><span class="lbl-short">Export</span><span class="lbl-long">Export Diagram</span><span aria-hidden="true">▾</span></button>
+            </div>
+            <div class="mock-zoom">
+              <span class="zl">Enable Zoom</span>
+              <button class="mock-switch" type="button" role="switch" aria-checked="true" aria-label="Enable Zoom"></button>
+            </div>
+            <div class="mock-panel" data-export-panel hidden>
+              <div class="stack">
+                <button class="mock-btn" type="button" data-copy-btn>Copy Mermaid code</button>
+                <button class="mock-btn" type="button">Download PNG</button>
+              </div>
+              <p class="mock-note">Last generated: just now · Actual cost: —</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="measure" data-measure>Closed card at 390px: <b>278px tall</b> · was 376px</div>
+      <p class="small" style="text-align:center; margin-top:8px">A mock rebuilt from the diff — not the live app. Tap <b>Export</b> in the card to open the panel.</p>
+    </div>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385 · fix: tighten mobile repo card layout</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+    <span><a href="https://github.com/ahmedkhaleel2004/gitdiagram/pull/205" target="_blank" rel="noopener">Read the real PR on GitHub ↗</a></span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2 · APP DEMO ============ -->
+<section class="slide" aria-label="App demo — before and after">
+  <p class="pr-line">PR 205 · App demo · the feature in the app</p>
+  <h2 class="slide-title">The repo card, on a phone — before &amp; after</h2>
+  <p class="lede" style="font-size:17.5px">GitDiagram turns a GitHub repo into an architecture diagram. The card below is what a visitor lands on. This PR changes nothing about the diagram — only how the card's controls are laid out on small screens.</p>
+
+  <div class="ba-row">
+    <div class="ba-toggle" role="group" aria-label="Demo before or after">
+      <button type="button" data-ba-set="before" aria-pressed="false">Before</button>
+      <button type="button" data-ba-set="after" aria-pressed="true">After</button>
+    </div>
+    <span class="ba-caption" data-ba-caption>After — one row, one zoom line, 98px shorter</span>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="phone" data-phone data-state="after" aria-label="Interactive mock of the GitDiagram repo card">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="mock-url">gitdiagram.com · repo page · 390px</div>
+          <div class="mock-card">
+            <div class="mock-repo">ahmedkhaleel2004 / gitdiagram</div>
+            <div class="mock-diagram" aria-hidden="true">
+              <svg viewBox="0 0 260 74" width="100%" height="74" role="img" aria-label="Tiny diagram sketch">
+                <g fill="#fff" stroke="#475569" stroke-width="2">
+                  <rect x="6" y="24" width="62" height="26" rx="5"/><rect x="99" y="6" width="62" height="26" rx="5"/>
+                  <rect x="99" y="44" width="62" height="26" rx="5"/><rect x="192" y="24" width="62" height="26" rx="5"/>
+                </g>
+                <g stroke="#475569" stroke-width="2" fill="none">
+                  <path d="M68 34 C 80 30, 86 22, 97 19"/><path d="M68 40 C 80 44, 86 52, 97 56"/><path d="M161 30 C 174 32, 180 34, 190 36"/>
+                </g>
+                <g font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#334155" text-anchor="middle">
+                  <text x="37" y="41">app/</text><text x="130" y="23">api/</text><text x="130" y="61">lib/</text><text x="223" y="41">diagram</text>
+                </g>
+              </svg>
+            </div>
+            <div class="mock-actions">
+              <button class="mock-btn" type="button"><span class="lbl-short">Regenerate</span><span class="lbl-long">Regenerate Diagram</span></button>
+              <button class="mock-btn" type="button" data-export-toggle aria-expanded="false"><span class="lbl-short">Export</span><span class="lbl-long">Export Diagram</span><span aria-hidden="true">▾</span></button>
+            </div>
+            <div class="mock-zoom">
+              <span class="zl">Enable Zoom</span>
+              <button class="mock-switch" type="button" role="switch" aria-checked="true" aria-label="Enable Zoom"></button>
+            </div>
+            <div class="mock-panel" data-export-panel hidden>
+              <div class="stack">
+                <button class="mock-btn" type="button" data-copy-btn>Copy Mermaid code</button>
+                <button class="mock-btn" type="button">Download PNG</button>
+              </div>
+              <p class="mock-note">Last generated: just now · Actual cost: —</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="measure" data-measure>Closed card at 390px: <b>278px tall</b> · was 376px</div>
+      <p class="small" style="text-align:center; margin-top:8px">Interactive mock rebuilt from the diff, labelled as a mock — it demonstrates layout only. The zoom switch and Export panel work; nothing leaves your device.</p>
+    </div>
+    <div>
+      <p class="group-label" style="margin-top:2px"><span class="gnum">✎</span>What to notice</p>
+      <ul class="callouts">
+        <li><span class="num">1</span><span><b>Two equal buttons, one row.</b> Before, Regenerate and Export stacked at uneven widths. After, they share a two-column grid — the eye reads them as one action group.</span></li>
+        <li><span class="num">2</span><span><b>Short labels earn their space.</b> “Regenerate” and “Export” on mobile; the full “Regenerate Diagram” / “Export Diagram” return at the <span class="mono">sm:</span> breakpoint, where there is room.</span></li>
+        <li><span class="num">3</span><span><b>Zoom becomes one line.</b> Label and switch were on separate rows; now they share a single row with a light divider above it, spanning the card's full width.</span></li>
+        <li><span class="num">4</span><span><b>Tap targets stay honest.</b> Every mobile control is at least 44px tall (<span class="mono">h-11</span> / <span class="mono">min-h-11</span>) — the card got shorter by removing wasted space, not by shrinking targets.</span></li>
+        <li><span class="num">5</span><span><b>Open Export in the mock.</b> The panel inside also changed: Copy and Download PNG go full-width at the same 44px height, and the “Last generated / Actual cost” notes step down a size on mobile.</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385</span>
+    <span>Heights 376→278px and 516→416px are the author's measurements in the PR description</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3 · HLD ============ -->
+<section class="slide" aria-label="HLD — how the card fits together">
+  <p class="pr-line">PR 205 · HLD · the feature slice, not the whole repo</p>
+  <h2 class="slide-title">How the repo card fits together</h2>
+  <p class="lede" style="font-size:17.5px">Only the slice this PR touches. Three components, one panel, zero backend — every changed box is a layout change, and everything the buttons <em>do</em> stays outside this PR.</p>
+
+  <div class="hld">
+    <div class="hld-row">
+      <div class="hld-node">
+        <span class="badge">UNCHANGED</span>
+        <h4>Visitor on a phone</h4>
+        <p>Opens a repo page on gitdiagram.com, sees the generated diagram inside the main card.</p>
+      </div>
+    </div>
+    <div class="hld-link">
+      <svg viewBox="0 0 22 30" fill="none" aria-hidden="true"><path d="M11 2 C 9 10, 13 16, 11 26 M5 20 L11 28 L17 20" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>sees &amp; taps inside</span>
+    </div>
+    <div class="hld-row">
+      <div class="hld-node changed" style="flex:2 1 320px; max-width:560px">
+        <span class="badge">CHANGED · CORE · +32 −30</span>
+        <h4>MainCard — the repo card</h4>
+        <p class="mono">src/components/main-card.tsx</p>
+        <p>Holds the diagram, the Regenerate / Export action row and the Enable Zoom switch. This PR rebuilds its mobile layout: 2-column action grid + one-row zoom control.</p>
+      </div>
+      <div class="hld-node">
+        <span class="badge">UNCHANGED</span>
+        <h4>The diagram itself</h4>
+        <p>Generated architecture diagram and the handlers behind Regenerate, Copy and Export. Not touched by this PR.</p>
+      </div>
+    </div>
+    <div class="hld-link">
+      <svg viewBox="0 0 22 30" fill="none" aria-hidden="true"><path d="M11 2 C 9 10, 13 16, 11 26 M5 20 L11 28 L17 20" stroke-width="2.4" stroke-linecap="round"/></svg>
+      <span>tapping Export opens</span>
+    </div>
+    <div class="hld-row">
+      <div class="hld-node changed">
+        <span class="badge">CHANGED · SUPPORTING · +5 −5</span>
+        <h4>ExportDropdown — the export panel</h4>
+        <p class="mono">src/components/export-dropdown.tsx</p>
+        <p>Tighter mobile spacing and notes; Download PNG gets the 44px full-width treatment.</p>
+      </div>
+      <div class="hld-node changed">
+        <span class="badge">CHANGED · SUPPORTING · +1 −1</span>
+        <h4>CopyButton — copy the code</h4>
+        <p class="mono">src/components/copy-button.tsx</p>
+        <p>One class line: same 44px full-width mobile sizing, so it matches Download PNG beside it.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend" aria-label="Legend">
+    <span><span class="sw" style="background:var(--yellow)"></span>Changed in this PR</span>
+    <span><span class="sw" style="background:var(--card)"></span>Unchanged — context only</span>
+    <span>No API · no backend · no data store in this slice</span>
+  </div>
+
+  <div class="distinction">
+    <h3>Keep this distinction</h3>
+    <p>This is a <b>presentation-only</b> change. The call graph does not move: MainCard still calls the same <span class="mono">onRegenerate</span>, <span class="mono">onCopy</span>, <span class="mono">onExportImage</span> and <span class="mono">onZoomToggle</span> handlers, and the export panel still renders the same controls. If a button misbehaves after this PR, the cause is layout (size, wrapping, overflow) — not new logic.</p>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385</span>
+    <span>Component relationships read from the real diff hunks</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4 · FILE 1 main-card.tsx ============ -->
+<section class="slide" aria-label="File 1 of 3 — main-card.tsx">
+  <p class="pr-line">PR 205 / 01 of 03</p>
+  <h2 class="filename">main-card.tsx</h2>
+  <p class="path">src/components/main-card.tsx</p>
+  <div class="chips">
+    <span class="chip core">CORE — read closely</span>
+    <span class="chip">modified</span>
+    <span class="chip"><span class="add">+32</span> <span class="del">−30</span></span>
+  </div>
+  <p class="filejob"><b>What this file does:</b> it renders the main repo card — the diagram area, the Regenerate and Export buttons, and the Enable Zoom switch a visitor uses on a repo page.</p>
+
+  <p class="group-label"><span class="gnum">1</span>Card layout</p>
+
+  <div class="why">
+    <h3>Why this file changes</h3>
+    <p>On mobile the actions stacked one under another at uneven widths, and the zoom label and switch sat on separate rows — the card grew to 376px tall and was hard to scan. The fix has to live here, because this file owns the action row.</p>
+  </div>
+
+  <div class="flow">
+    <div class="flow-box input">
+      <div class="tag">Input</div>
+      <h4>A tall, uneven stack</h4>
+      <p>Regenerate, Export and the zoom control pile up vertically on a phone. Each takes its own row, its own width, and its own large padding.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box this">
+      <div class="tag">This file</div>
+      <h4>Rebuild the action row</h4>
+      <p>The row becomes a 2-column grid (<code>grid-cols-2</code>) on mobile: both buttons go full-width in their column at <code>min-h-11</code>, labels shorten to “Regenerate” / “Export”, and zoom moves into one full-width row (<code>col-span-2</code>) with a top divider. At <code>sm:</code> the old flex row and full labels return.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box result">
+      <div class="tag">Result</div>
+      <h4>A shorter, even card</h4>
+      <p>Closed card drops from 376px to 278px tall at 390px wide, both buttons are comfortable 44px tap targets, and the layout still fits at 320px with no overflow.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <h3>Keep this distinction</h3>
+    <p>No button changes what it does. Regenerate, Export and the zoom switch call the exact same handlers as before — only their size, position and mobile label text change. Shorter labels are a mobile-only space trade, not a rename: desktop keeps “Regenerate Diagram” and “Export Diagram”.</p>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5 · FILE 2 copy-button.tsx ============ -->
+<section class="slide" aria-label="File 2 of 3 — copy-button.tsx">
+  <p class="pr-line">PR 205 / 02 of 03</p>
+  <h2 class="filename">copy-button.tsx</h2>
+  <p class="path">src/components/copy-button.tsx</p>
+  <div class="chips">
+    <span class="chip">SUPPORTING — scan for surprises</span>
+    <span class="chip">modified</span>
+    <span class="chip"><span class="add">+1</span> <span class="del">−1</span></span>
+  </div>
+  <p class="filejob"><b>What this file does:</b> it is the Copy button inside the export panel — it copies the diagram's Mermaid code and flips its state to confirm the copy (“Copy Mermaid.js code” → “Mermaid code copied”).</p>
+
+  <p class="group-label"><span class="gnum">2</span>Export tools</p>
+
+  <div class="why">
+    <h3>Why this file changes</h3>
+    <p>Inside the opened export panel, this button kept its big desktop padding on phones, so it did not match the panel's other button. It needs the same mobile sizing rule as its neighbour, Download PNG — one shared look for the panel's tools.</p>
+  </div>
+
+  <div class="flow">
+    <div class="flow-box input">
+      <div class="tag">Input</div>
+      <h4>Desktop padding on a phone</h4>
+      <p>The button used <code>p-4</code> padding with <code>text-base</code> at every screen size, making it bulky and a different height from the Download PNG button beside it in the panel.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box this">
+      <div class="tag">This file</div>
+      <h4>One class swap</h4>
+      <p>The single changed line gives the button <code>h-11 w-full</code> (44px tall, full width) with <code>text-sm</code> on mobile. From <code>sm:</code> up it returns to the previous padding and size — <code>sm:p-6 sm:text-lg</code>, now with <code>sm:h-10 sm:w-auto</code>.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box result">
+      <div class="tag">Result</div>
+      <h4>A matched pair in the panel</h4>
+      <p>Copy and Download PNG now line up at the same height and full width on mobile, so the opened panel reads as one tidy tool stack instead of two mismatched buttons.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <h3>Keep this distinction</h3>
+    <p>This is one line of styling on one button — it does not change what gets copied. The Mermaid code, the click handler and the “copied” confirmation state all work exactly as before; only the button's mobile footprint changes.</p>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6 · FILE 3 export-dropdown.tsx ============ -->
+<section class="slide" aria-label="File 3 of 3 — export-dropdown.tsx">
+  <p class="pr-line">PR 205 / 03 of 03</p>
+  <h2 class="filename">export-dropdown.tsx</h2>
+  <p class="path">src/components/export-dropdown.tsx</p>
+  <div class="chips">
+    <span class="chip">SUPPORTING — scan for surprises</span>
+    <span class="chip">modified</span>
+    <span class="chip"><span class="add">+5</span> <span class="del">−5</span></span>
+  </div>
+  <p class="filejob"><b>What this file does:</b> it renders the panel that opens when you tap Export — the Download PNG button, plus the “Last generated” and “Actual cost” notes shown under it when they exist.</p>
+
+  <p class="group-label"><span class="gnum">2</span>Export tools</p>
+
+  <div class="why">
+    <h3>Why this file changes</h3>
+    <p>When the panel opens on a phone it added a lot of height — loose spacing, a roomy button and full-size notes made the expanded card the tallest state of all, 516px. Tightening this panel is what brings that state down to 416px.</p>
+  </div>
+
+  <div class="flow">
+    <div class="flow-box input">
+      <div class="tag">Input</div>
+      <h4>An airy panel on mobile</h4>
+      <p><code>space-y-4</code> gaps, a <code>gap-3</code> button row with desktop padding, and <code>text-sm</code> notes — comfortable on desktop, wasteful on a 390px screen.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box this">
+      <div class="tag">This file</div>
+      <h4>Tighten, don't remove</h4>
+      <p>Mobile spacing drops to <code>space-y-3</code> and <code>gap-2.5</code>; Download PNG gets the same <code>h-11 w-full</code> treatment as the Copy button; both notes shrink to <code>text-xs</code> on mobile. Every value steps back up at <code>sm:</code>.</p>
+    </div>
+    <div class="flow-arrow" aria-hidden="true"><svg viewBox="0 0 32 20" fill="none"><path d="M2 10 C 10 7, 20 13, 28 10 M22 4 L29 10 L22 16" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+    <div class="flow-box result">
+      <div class="tag">Result</div>
+      <h4>Same panel, 100px shorter</h4>
+      <p>Expanded card: 516px → 416px at 390px wide. Every control and both notes are still there — just closer together and right-sized on small screens.</p>
+    </div>
+  </div>
+
+  <div class="distinction">
+    <h3>Keep this distinction</h3>
+    <p>Nothing is hidden on mobile to save space. Download PNG, “Last generated” and “Actual cost” all still render — they are smaller and tighter, not removed or deferred — and desktop spacing is completely unchanged.</p>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7 · GATES & TESTS ============ -->
+<section class="slide" aria-label="Safety gates and tests">
+  <p class="pr-line">PR 205 · Closing · gates &amp; tests</p>
+  <h2 class="slide-title">Safety gates &amp; tests</h2>
+  <p class="lede" style="font-size:17.5px">Checked against the real diff — 3 component files, only Tailwind class strings move. Anything the diff cannot prove is labelled as reported, not verified.</p>
+
+  <ul class="gate-list">
+    <li>
+      <span class="gate-ic pass" aria-hidden="true">✓</span>
+      <div>
+        <span class="verdict">Pass</span>
+        <h4>Secrets &amp; credentials</h4>
+        <p>No keys, tokens or config values appear in the diff. The changed lines are layout class names in three <span class="mono">src/components/</span> files — nothing sensitive to leak.</p>
+      </div>
+    </li>
+    <li>
+      <span class="gate-ic pass" aria-hidden="true">✓</span>
+      <div>
+        <span class="verdict">Pass · none found</span>
+        <h4>Breaking changes</h4>
+        <p>No props, exports, routes or handlers change. MainCard still receives and calls the same <span class="mono">onRegenerate</span>, <span class="mono">onCopy</span>, <span class="mono">onExportImage</span> and <span class="mono">onZoomToggle</span> — callers of these components need no updates.</p>
+      </div>
+    </li>
+    <li>
+      <span class="gate-ic na" aria-hidden="true">—</span>
+      <div>
+        <span class="verdict">Not applicable</span>
+        <h4>Auth, data &amp; migrations</h4>
+        <p>No new endpoint, page or data access; no database, schema or stored data touched; nothing a user can do gains new powers. There is no backend change in this PR at all.</p>
+      </div>
+    </li>
+    <li>
+      <span class="gate-ic na" aria-hidden="true">—</span>
+      <div>
+        <span class="verdict">Not applicable</span>
+        <h4>Dependencies</h4>
+        <p><span class="mono">package.json</span> is untouched — no new packages, no version bumps, no new supply-chain surface.</p>
+      </div>
+    </li>
+    <li>
+      <span class="gate-ic check" aria-hidden="true">!</span>
+      <div>
+        <span class="verdict">The one thing to eyeball</span>
+        <h4>Desktop regression risk</h4>
+        <p>The whole bet of this PR is that every mobile change is undone at the <span class="mono">sm:</span> breakpoint. A reviewer should spot-check that each new mobile class has its <span class="mono">sm:</span> counterpart — in the diff, they do — and glance at the desktop card once. The author reports browser checks at desktop width in light and dark mode.</p>
+      </div>
+    </li>
+  </ul>
+
+  <p class="group-label"><span class="gnum">✓</span>Has it been tested?</p>
+  <div class="two-col">
+    <div>
+      <p style="margin:0"><b>In this diff: no test files.</b> None of the 3 changed files is a test, and no test was added or edited — normal for a pure layout change, but it means the diff itself proves nothing about behaviour.</p>
+      <p style="margin:12px 0 0"><b>Reported in the PR description</b> (author's validation list, not re-run by this deck):</p>
+      <ul class="check-list">
+        <li><span class="mono">bun run check</span> and <span class="mono">bun run format:check</span></li>
+        <li><span class="mono">bun run test</span> — 282 tests</li>
+        <li><span class="mono">bun run build</span> and <span class="mono">bun run perf:budget</span></li>
+        <li>React Doctor changed-scope scan: 100/100 · <span class="mono">knip</span> · <span class="mono">bun audit</span></li>
+        <li>Production-build browser checks at 320px, 390px and desktop — light mode, dark mode, collapsed and expanded states</li>
+      </ul>
+    </div>
+    <div class="verdict-box" style="margin-top:0">
+      <h3>Reviewer's verdict shape</h3>
+      <p>A small, layout-only PR: 74 changed lines across 3 files — well under the 400-line size where review quality drops off. One core file carries the idea; the two supporting files just apply the same 44px sizing rule. Read main-card.tsx closely, scan the other two, check the <span class="mono">sm:</span> counterparts — done.</p>
+    </div>
+  </div>
+
+  <div class="src-footer">
+    <span>Source: c0d9fe393385 · base 9ce0842b7c7a · merged as 20eea559377f</span>
+    <span>Gate findings read from the diff fetched from the GitHub API at build time</span>
+    <span>High-level explanation, not proof of backend deployment</span>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var railBtns = Array.prototype.slice.call(document.querySelectorAll('.rail button'));
+  var prev = document.getElementById('prevBtn');
+  var next = document.getElementById('nextBtn');
+  var counter = document.getElementById('counter');
+  var bar = document.getElementById('progressBar');
+  var idx = 0;
+
+  function show(i){
+    idx = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function(s, k){ s.classList.toggle('active', k === idx); });
+    railBtns.forEach(function(b, k){ b.setAttribute('aria-current', k === idx ? 'true' : 'false'); });
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    bar.style.width = ((idx + 1) / slides.length * 100) + '%';
+    prev.disabled = idx === 0;
+    next.disabled = idx === slides.length - 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  prev.addEventListener('click', function(){ show(idx - 1); });
+  next.addEventListener('click', function(){ show(idx + 1); });
+  railBtns.forEach(function(b){
+    b.addEventListener('click', function(){ show(parseInt(b.getAttribute('data-go'), 10)); });
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight') show(idx + 1);
+    else if (e.key === 'ArrowLeft') show(idx - 1);
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+  });
+
+  /* Before / After — one state drives every phone mock */
+  var baBtns = Array.prototype.slice.call(document.querySelectorAll('[data-ba-set]'));
+  var phones = Array.prototype.slice.call(document.querySelectorAll('[data-phone]'));
+  var caption = document.querySelector('[data-ba-caption]');
+  function setBA(state){
+    phones.forEach(function(p){ p.setAttribute('data-state', state); });
+    baBtns.forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-ba-set') === state ? 'true' : 'false'); });
+    document.querySelectorAll('[data-measure]').forEach(function(m){
+      var phone = m.parentElement.querySelector('[data-phone]');
+      var open = phone && phone.querySelector('[data-export-panel]') && !phone.querySelector('[data-export-panel]').hidden;
+      if (state === 'before') {
+        m.innerHTML = open ? 'Expanded card at 390px: <b>516px tall</b> · after: 416px'
+                           : 'Closed card at 390px: <b>376px tall</b> · after: 278px';
+      } else {
+        m.innerHTML = open ? 'Expanded card at 390px: <b>416px tall</b> · was 516px'
+                           : 'Closed card at 390px: <b>278px tall</b> · was 376px';
+      }
+    });
+    if (caption) {
+      caption.textContent = state === 'before'
+        ? 'Before — stacked buttons, zoom split over two rows'
+        : 'After — one row, one zoom line, 98px shorter';
+    }
+  }
+  baBtns.forEach(function(b){
+    b.addEventListener('click', function(){ setBA(b.getAttribute('data-ba-set')); });
+  });
+
+  /* Mock interactions: export panel + zoom switch + copy feedback */
+  document.querySelectorAll('[data-phone]').forEach(function(phone){
+    var toggle = phone.querySelector('[data-export-toggle]');
+    var panel = phone.querySelector('[data-export-panel]');
+    if (toggle && panel) {
+      toggle.addEventListener('click', function(){
+        var open = panel.hidden;
+        panel.hidden = !open;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        setBA(phone.getAttribute('data-state'));
+      });
+    }
+    var sw = phone.querySelector('.mock-switch');
+    if (sw) {
+      sw.addEventListener('click', function(){
+        sw.setAttribute('aria-checked', sw.getAttribute('aria-checked') === 'true' ? 'false' : 'true');
+      });
+    }
+    var copyBtn = phone.querySelector('[data-copy-btn]');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function(){
+        var old = copyBtn.textContent;
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(function(){ copyBtn.textContent = old; }, 1400);
+      });
+    }
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>
