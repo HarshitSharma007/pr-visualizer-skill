@@ -52,6 +52,8 @@ The skill fetches the real diff from the GitHub API (no token needed for public 
 
 A sample deck built with this skill: **gitdiagram PR #205, "Tighten the mobile repo card layout"** — 7 slides, cover + interactive phone app-demo + HLD + one slide per file (`main-card.tsx`, `copy-button.tsx`, `export-dropdown.tsx`) + gates & tests. All numbers grounded in the real diff and PR body (closed card 376px → 278px at 390px; 282 tests reported in the PR validation, not re-run). The `main-card.tsx` slide is reproduced in full, filled in, in `SKILL.md` under "Worked example".
 
+View the full sample deck: [`examples/gitdiagram-pr-205/index.html`](examples/gitdiagram-pr-205/index.html) — a single self-contained file; download it and open it in a browser to click through all 7 slides.
+
 ## Rules the skill enforces
 
 - **Ground everything in the real diff.** No invented functions, callers, numbers, or test results.
