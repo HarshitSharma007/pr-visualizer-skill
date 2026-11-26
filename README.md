@@ -20,7 +20,7 @@ The HLD slide from the sample deck (gitdiagram PR #205) — the feature slice on
 
 ![HLD slide — how the repo card fits together](assets/hld-slide.png)
 
-The per-file slide is the signature format, so the best hero image for this README is the `main-card.tsx` slide (WHY box, INPUT → THIS FILE → RESULT, KEEP THIS DISTINCTION) — swap it in as the first image when available, keeping this HLD slide second.
+The per-file slide — the signature format, with its WHY box, INPUT → THIS FILE → RESULT flow, and KEEP THIS DISTINCTION box — is reproduced in full in `SKILL.md` under "Worked example".
 
 ## Install
 
