@@ -14,6 +14,14 @@ An agent skill that turns a GitHub PR link into a plain-language, learning-focus
 
 Style: **Classic Sketchbook** — light, warm cream paper, pale pastel boxes, hand-drawn fonts (Excalifont / Virgil), thin slate borders. No dark mode, no saturated colours.
 
+## Example output
+
+The HLD slide from the sample deck (gitdiagram PR #205) — the feature slice only, changed boxes highlighted, and the distinction that matters:
+
+![HLD slide — how the repo card fits together](assets/hld-slide.png)
+
+The per-file slide is the signature format, so the best hero image for this README is the `main-card.tsx` slide (WHY box, INPUT → THIS FILE → RESULT, KEEP THIS DISTINCTION) — swap it in as the first image when available, keeping this HLD slide second.
+
 ## Install
 
 Copy this folder into your skills directory, e.g.:
