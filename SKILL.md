@@ -62,7 +62,7 @@ Triage **before** reading closely, in this order:
 
 **Grouping files into numbered groups.** A slide's group is the change's purpose, not a filename. Group files that serve one purpose (same feature area, directory, or commit) and name the group from that purpose, e.g. `1. Ribbon wiring` groups the gate declaration with the files that register behind it. Rules: order groups core-first in review order; number them `1.`, `2.`, …; keep at most 5 groups; give each group a short verb-first name; mechanical files get no group — they are listed in an appendix slide, not given their own slides. If a file fits two groups, put it in the group where its change matters most and mention the other group in its RESULT box.
 
-Show the size up front: total files, total +/−, and a warning when the PR is over the 400-line review threshold — defect detection collapses above ~400 lines / 60–90 minutes, so say so and segment by commit or module.
+Show the size up front: total files, total +/−, and a warning when the PR is over the 400-line review threshold — defect detection collapses above ~400 lines / 60–90 minutes, so say so and segment by commit or module. Over 100 files, switch to the Large PRs mode below.
 
 ### Step 3 — Changed functions (per file)
 
@@ -124,6 +124,18 @@ Report, in this order:
 4. CI status (tests green/red on head).
 5. Patch coverage % **only if a coverage report exists** (Codecov `codecov/patch` = only the lines the PR changed). Without a coverage report, label it honestly: *"No coverage report found in CI — showing test presence, not coverage."* Never present test presence as a coverage %. Coverage shows which lines ran, not whether the tests check anything.
 
+## Large PRs (100+ files) — mode switch
+
+One slide per file breaks past ~100 files: a 1,000-slide deck is a book nobody reads. When a PR has more than 100 files (or is over the 400-line threshold), switch to this mode. The deck becomes a map of the change and where the risk concentrates — not a full review — and says so on the cover.
+
+- **Lead with the size warning.** The cover says plainly: "This PR is too large to review as one unit." Recommend splitting it by commit or by module, and state which segmentation the deck used (by commit if the PR has logical commits, otherwise by module/directory).
+- **Fetch with a token.** `listFiles` paginates at 100/page, so 1,000 files is 10 calls — fine with a token, too tight without one (60 requests/hour unauthenticated). Expect missing patches: GitHub truncates diffs on very large PRs, so some files come back with no `patch`. A file with no patch is labelled "changed — patch unavailable", never explained from guesses. Do not fetch full file contents for every file — only for core files.
+- **Triage collapses the bulk.** Most files in a huge PR are mechanical — lockfiles, generated code, vendored code, snapshots, pure renames. They collapse into one appendix slide with counts. What remains is usually 50–150 core files, still too many for per-file slides.
+- **Per-group slides replace per-file slides.** Group the core files (same grouping rules as Step 2, but allow up to 10 groups for a huge PR). One slide per group: the group name, why it exists, and a table of its files — file, +/−, one line on what changed. Only the top 5–10 core files get full per-file slides (pick by triage priority: sensitive paths first — auth, payments, migrations, schema — then the largest logic changes). Every other core file lives in the appendix table, not on its own slide.
+- **Scope the expensive steps down.** Parse ASTs and build call graphs for core files only, and full caller chains only for the files that got their own slide. Run the safety gates diff-aware on core files only. Anything not run is labelled "not run — <reason>" on the slide, never "pass".
+- **HLD does not change.** It is already capped at ~15 nodes and shows only the feature slice, so it works the same at any PR size.
+- **Say what the deck is not.** On the cover and the gates slide: "Summary and risk map, not a full review. Files in the appendix were triaged, not read line by line."
+
 ## Deck structure
 
 Slides, in this order. Navigate with Prev/Next, a clickable slide rail, and arrow keys.
@@ -131,7 +143,7 @@ Slides, in this order. Navigate with Prev/Next, a clickable slide rail, and arro
 1. **Cover** — PR number, title, author, base → head, one-line intent ("what changes for the user/system"), the real numbers (files, +/−, lines changed), triage counts, and a link to the live PR.
 2. **App-level feature slide** — what feature is getting changed, in one line, with a **demo of the app itself** (see "Making the app demo" below). Before/After toggle where it helps (gate ON vs OFF, before vs after layout). Label any mock as a mock — never pass a mock off as a screenshot.
 3. **HLD slide** — the feature diagram from Step 5, before → after.
-4. **One slide per file change** — in triage order (core first, mechanical collapsed or last). See the per-file layout below.
+4. **One slide per file change** — in triage order (core first, mechanical collapsed or last). See the per-file layout below. In large-PR mode (100+ files), this becomes one slide per group plus an appendix table — see the Large PRs mode switch.
 5. **Gates & tests slide** — the gate panel from Step 6, the test list and test gaps from Step 7, and the size warning if the PR is over 400 lines.
 
 ### Making the app demo (slide 2)
@@ -204,7 +216,7 @@ src/components/main-card.tsx
 │ A user opens   │ →  │ MainCard lays out  │ →  │ At 390px the    │
 │ a repo page on │    │ the action row     │    │ closed card is  │
 │ a phone; the   │    │ (changed lines     │    │ 278px tall      │
-│ diagram is     │    │ 104–175):          │    │ (was 376px);    │
+│ diagram is     │    │ 104–179):          │    │ (was 376px);    │
 │ generated and  │    │ Regenerate +       │    │ expanded export │
 │ MainCard       │    │ Export become an   │    │ card 416px      │
 │ renders the    │    │ equal two-column   │    │ (was 516px).    │
@@ -229,7 +241,7 @@ src/components/main-card.tsx
 Source: c0d9fe393385 | High-level explanation, not proof of backend deployment
 ```
 
-The same PR's other two slides follow the same shape: `copy-button.tsx` (02 of 03, +1 −1 — the copy button becomes a full-width 44px touch target on mobile) and `export-dropdown.tsx` (03 of 03, +5 −5 — tighter spacing and smaller metadata text on mobile). The full 7-slide sample deck (cover + phone app-demo + HLD + these three file slides + gates & tests) is the reference output for this skill; its gates slide is honest about provenance — no test files are in the diff, and the 282 tests are reported in the PR validation, not re-run.
+The same PR's other two slides follow the same shape: `copy-button.tsx` (02 of 03, +1 −1 — the copy button becomes a full-width 44px touch target on mobile) and `export-dropdown.tsx` (03 of 03, +5 −5 — tighter spacing and smaller metadata text on mobile). The full 7-slide sample deck (cover + phone app-demo + HLD + these three file slides + gates & tests) is the reference output for this skill; its gates slide is honest about provenance — no test files are in the diff, and the 282 tests are reported in the PR validation, not re-run. Provenance for the numbers in the worked example, verified 2026-11-27 against the live PR: the 376→278px (390px) and "fits at 320px with no overflow" figures are from the PR body's Impact section, and the changed-line span 104–179 is the new-file span across the diff's four hunks (first hunk `@@ -104,10 +104,10 @@`, last hunk `@@ -171,7 +173,7 @@`).
 
 ## Visual style — Classic Sketchbook (light)
 
