@@ -12,7 +12,7 @@ An agent skill that turns a GitHub PR link into a plain-language, learning-focus
 - **One slide per file** — header (`PR <number> / <n> of <total>`, filename, full path), numbered group, pale yellow **WHY this file changes** box, **INPUT → THIS FILE → RESULT** flow, pale lavender **KEEP THIS DISTINCTION** box, and a source footer with the commit hash
 - **Gates & tests slide** — safety gates (secrets, auth, validation, migrations, breaking changes, dependencies) and test coverage, with honest provenance
 
-Style: **Classic Sketchbook** — light, warm cream paper, pale pastel boxes, hand-drawn fonts (Excalifont / Virgil), thin slate borders. No dark mode, no saturated colours.
+Style: **Classic Sketchbook, Clean v2** — pure white background, pale pastel boxes and coloured buttons/cards, handwritten titles (Caveat) with clean Inter body text, thin ink borders, no shadows. All text black, no white text anywhere. No dark mode, no saturated colours.
 
 ## Example output
 

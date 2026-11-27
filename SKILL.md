@@ -243,21 +243,30 @@ Source: c0d9fe393385 | High-level explanation, not proof of backend deployment
 
 The same PR's other two slides follow the same shape: `copy-button.tsx` (02 of 03, +1 −1 — the copy button becomes a full-width 44px touch target on mobile) and `export-dropdown.tsx` (03 of 03, +5 −5 — tighter spacing and smaller metadata text on mobile). The full 7-slide sample deck (cover + phone app-demo + HLD + these three file slides + gates & tests) is the reference output for this skill; its gates slide is honest about provenance — no test files are in the diff, and the 282 tests are reported in the PR validation, not re-run. Provenance for the numbers in the worked example, verified 2026-11-27 against the live PR: the 376→278px (390px) and "fits at 320px with no overflow" figures are from the PR body's Impact section, and the changed-line span 104–179 is the new-file span across the diff's four hunks (first hunk `@@ -104,10 +104,10 @@`, last hunk `@@ -171,7 +173,7 @@`).
 
-## Visual style — Classic Sketchbook (light)
+## Visual style — Classic Sketchbook, Clean v2 (light)
 
-The locked theme. Light, warm, hand-drawn — never dark, never saturated.
+The locked theme, updated 2026-11-27 from the sample deck the user tried and approved. Light, clean, hand-drawn — never dark, never saturated. The clean white surface is what makes a PR easy to read.
 
-- **Background:** warm cream paper `#fffef9`; slides white.
-- **Boxes (pale pastels only):**
-  - WHY — pale yellow `#fff8d6`
-  - INPUT / RESULT — pale blue `#eaf2fe`
-  - THIS FILE — pale green `#e8f5eb`
-  - KEEP THIS DISTINCTION — pale lavender `#f2eeff`
-- **Borders:** thin slate `#3d4a5f`, 1.6–1.8px, slightly wobbly hand-drawn radii; soft shadows only (`rgba` 0.08–0.14). No heavy black borders, no hard shadows.
+- **Background:** pure white `#ffffff` for the page and for slides. No cream paper, no dot grid, no texture, no background image.
+- **Boxes (white first, pale pastels only as fills):**
+  - WHY — pale yellow `#fffbeb`
+  - INPUT / RESULT — pale blue `#eff6ff`
+  - THIS FILE — pale green `#f0fdf4`
+  - KEEP THIS DISTINCTION — pale lavender `#faf5ff`
+  - Verdict — pale green `#f0fdf4`
+  - Stat cards — pale blue `#eff6ff`, pale green `#f0fdf4`, pale yellow `#fffbeb`, one per card
+  - Chips — pale yellow `#fef3c7`
+- **Buttons and cards (coloured, on the white surface):**
+  - Slide-rail pills — one soft colour per slide, in order: blue `#dbeafe`, green `#dcfce7`, yellow `#fef9c3`, lavender `#ede9fe`, pink `#fce7f3`, orange `#ffedd5`, teal `#ccfbf1`. Dark text, 1.5px ink border, pill radius. Active slide gets a 2px black outline.
+  - Prev / Next — pale blue `#dbeafe`, black bold text.
+  - Before / After toggle — inactive white with black text, active pale blue `#bfdbfe` with dark blue text `#1e3a8a`.
+  - Phone-mock buttons — pale lavender `#ede9fe`, black text.
+- **Borders:** thin ink `#161616`, 1.5px, straight 10–14px radii. No wobble, no shadows, no soft shadows.
+- **Text — all black, no exceptions:** every text colour is black `#161616`, and every `button` gets an explicit `color: #161616` in CSS. Buttons do not reliably inherit text colour — in a dark-mode viewer they default to white text, which vanishes on a white or pale-blue button. Never use white text anywhere in a deck. Muted text is dark grey `#374151`, never light grey `#6b7280`. A disabled button is never `opacity: .3` — use a light-grey background `#f3f4f6` with dark-grey text `#374151` so it stays readable.
 - **Delta colours (use everywhere, consistently):** green = new, amber = changed, red = removed. Always add a text badge (`+ New` / `Δ Changed` / `− Removed`) so colour is never the only cue.
-- **Fonts:** hand-drawn for diagram labels and titles — Excalifont (Excalidraw `fontFamily: 5`, current default) or Virgil (`fontFamily: 1`); clean body text in Inter; code / file paths / line refs in Cascadia or IBM Plex Mono. Diagram text ≥14px, body ≥16px, titles ≥20px. No emoji inside diagrams.
+- **Fonts:** handwritten titles and labels in Caveat (700); clean body text in Inter; code / file paths / line refs in IBM Plex Mono. Diagram text ≥14px, body ≥16px, titles ≥20px (deck titles 40–52px). No emoji inside diagrams.
 - **Diagrams:** generate Excalidraw JSON (`.excalidraw`) as the canonical artefact — plain JSON array of elements, fixed `seed` for reproducible wobble, `roughness: 1` for hand-drawn. Render with `@excalidraw/excalidraw` (`convertToExcalidrawElements`, `exportToSvg` / `exportToBlob`) or headless via Kroki (`kroki.io/excalidraw/svg`, SVG only). Ship the `.excalidraw` file alongside the deck so it opens in excalidraw.com.
-- **Light theme only.** Do not add a dark mode and do not follow the OS dark preference.
+- **Light theme only.** Do not add a dark mode and do not follow the OS dark preference. Set `color-scheme: light` and an explicit black text colour on `body` and on every button, so a dark-mode viewer cannot turn the text white.
 
 ## Output formats
 
@@ -276,6 +285,7 @@ The locked theme. Light, warm, hand-drawn — never dark, never saturated.
 - [ ] Numbers (files, +/−, heights, timings) match the PR body or the API — re-check them, don't trust memory.
 - [ ] Mocks and screenshots are labelled as such.
 - [ ] Deck opens, all slides navigate, Before/After toggle works, no horizontal overflow on mobile.
+- [ ] All text is black (`#161616`) on white — no white text anywhere, every button has an explicit black text colour, muted text is `#374151` or darker, and a disabled button stays readable (light-grey background, dark-grey text, never `opacity: .3`).
 
 ## Example
 
