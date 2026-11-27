@@ -4,6 +4,8 @@ An agent skill that turns a GitHub PR link into a plain-language, learning-focus
 
 **Input:** a PR URL. **Output:** a slide deck — PowerPoint first, HTML as the interactive twin — one slide per file change, plus an app-level slide showing what feature is changing, with a demo of the app itself.
 
+![PR Visualizer — Turn any PR into a deck anyone can review](assets/pr-visualizer-ad.png)
+
 ## What a deck looks like
 
 - **Cover** — the PR in one line, with the real numbers (files, +/−, triage counts)
@@ -18,7 +20,7 @@ Style: **Classic Sketchbook, Clean v2** — pure white background, pale pastel b
 
 The HLD slide from the sample deck (gitdiagram PR #205) — the feature slice only, changed boxes highlighted, and the distinction that matters:
 
-![HLD slide — how the repo card fits together](assets/hld-slide.png)
+![HLD slide — how the repo card fits together](assets/hld-slide-clean-v2.png)
 
 The per-file slide — the signature format, with its WHY box, INPUT → THIS FILE → RESULT flow, and KEEP THIS DISTINCTION box — is reproduced in full in `SKILL.md` under "Worked example".
 
